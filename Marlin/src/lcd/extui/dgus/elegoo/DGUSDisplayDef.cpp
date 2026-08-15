@@ -2073,7 +2073,7 @@
         opos = npos;
         npos = planner.get_axis_position_mm(E_AXIS);
         
-        if((true == card.isPrinting()) && (true == PoweroffContinue) && (opos!=npos))
+        if((true == card.isPrinting()) && (true == PoweroffContinue) && ((opos!=npos) || RTS_M600_Flag))
         {
           #if ENABLED(DUAL_X_CARRIAGE)
             if((0 == save_dual_x_carriage_mode) && (0 == READ(CHECKFILEMENT0_PIN)) && (active_extruder == 0))
@@ -2113,7 +2113,11 @@
             }
           #else
             {
-              if( (0 == READ(CHECKFILEMENT0_PIN)) ||  RTS_M600_Flag)
+              if(RTS_M600_Flag)
+              {
+                Checkfilenum = 99;  // Pause the print job immediately if M600 is triggered
+              }
+              else if(0 == READ(CHECKFILEMENT0_PIN))
               {
                 Checkfilenum++;
                 delay(5);
